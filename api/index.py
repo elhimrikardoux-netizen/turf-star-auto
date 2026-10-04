@@ -1,15 +1,22 @@
+from http.server import BaseHTTPRequestHandler
 import os
 import requests
 from datetime import datetime
 
-def handler(request):
-    BOT_TOKEN = os.environ.get("BOT_TOKEN")
-    CHANNEL_ID = os.environ.get("CHANNEL_ID")
-    today = datetime.now().strftime("%d/%m/%Y")
-    message = f"⭐ TURF STAR V3 AUTO - {today} ⭐\n\n🏇 Pronostic du jour est pret!\n🎯 Base solide + outsiders\n\n#TURF #PMU"
-    if BOT_TOKEN and CHANNEL_ID:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        data = {"chat_id": CHANNEL_ID, "text": message}
-        requests.post(url, data=data)
-        return {"statusCode": 200, "body": "Sent!"}
-    return {"statusCode": 200, "body": "TURF STAR AUTO Ready"}
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        BOT_TOKEN = os.environ.get("BOT_TOKEN")
+        CHANNEL_ID = os.environ.get("CHANNEL_ID")
+        today = datetime.now().strftime("%d/%m/%Y")
+        message = f"STAR TURF V3 AUTO - {today}"
+        if BOT_TOKEN and CHANNEL_ID:
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+            try:
+                requests.post(url, data={"chat_id": CHANNEL_ID, "text": message}, timeout=10)
+            except:
+                pass
+        self.send_response(200)
+        self.send_header('Content-type','text/plain')
+        self.end_headers()
+        self.wfile.write(f"TURF STAR AUTO Ready - {today}".encode())
+        return
